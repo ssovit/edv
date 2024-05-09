@@ -6,8 +6,9 @@ import puppeteer from "puppeteer";
 const pdfDirectory = "./pdf";
 const checkedDirectory = "./checked";
 const winnerDirectory = "./winner";
-function randomStr(length=5) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+function randomStr(length = 5) {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -15,18 +16,16 @@ function randomStr(length=5) {
   return result;
 }
 
-async function processPDFFiles() {
-  const files = fs.readdirSync(pdfDirectory);
-
+async function processPDFFiles(pdfFiles) {
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: ["--start-maximized"],
     defaultViewport: null,
     //downloadPath: "./captcha",
   });
   const page = await browser.newPage();
 
-  for (const file of files) {
+  for (const file of pdfFiles) {
     if (file.endsWith(".pdf")) {
       const pdfPath = path.join(pdfDirectory, file);
       console.log(`Checking : ${file}`);
@@ -74,21 +73,23 @@ async function processPDFFiles() {
   // Close the browser
   await browser.close();
 }
-const fillFields = async (page, text, browser) => {
+const fillFields = async (page, text) => {
   text = text.replace(/(\s+)/i, " ");
-  const conf = text.match(/Confirmation Number(?:\s+)?:(?:\s+)?(.*)Year of Birth/i)[1];
+  const conf = text.match(
+    /Confirmation Number(?:\s+)?:(?:\s+)?(.*)Year of Birth/i,
+  )[1];
   const lastName = text.match(
     /Entrant Name(?:\s+)?:(?:\s+)?([a-zA-Z0-9 ]+),/i,
   )[1];
   const year = text.match(/Year of Birth(?:\s+)?:(?:\s+)?(\d+)/i)[1];
 
-  await page.type("#txtCN", conf.replace(/\s+/g,""));
+  await page.type("#txtCN", conf.replace(/\s+/g, ""));
   await page.type("#txtLastName", lastName);
   await page.type("#txtYOB", year);
   await page.focus("#txtCodeInput");
-  await page.evaluate(() => {
-    window.scrollBy(0, window.innerHeight);
-  });
+  // await page.evaluate(() => {
+  //   window.scrollBy(0, window.innerHeight);
+  // });
   try {
     const audioUrl = await page.evaluate(() => {
       const url =
@@ -109,16 +110,12 @@ const fillFields = async (page, text, browser) => {
       "http://127.0.0.1:8000/v1/audio/transcriptions",
       formData,
     );
-    const captchaText=captchaRes.data.replace(/[^a-zA-Z0-9]/g, "").replace(/\s+/g, "");
-    await page.type(
-      "#txtCodeInput",
-      captchaText.toUpperCase()
-    );
+    const captchaText = captchaRes.data
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .replace(/\s+/g, "");
+    await page.type("#txtCodeInput", captchaText.toUpperCase());
   } catch (e) {
-    await page.type(
-      "#txtCodeInput",
-      randomStr()
-    );
+    await page.type("#txtCodeInput", randomStr());
   }
 };
 const getTextFromPDF = async (pdfPath) => {
@@ -135,7 +132,30 @@ const getTextFromPDF = async (pdfPath) => {
     });
   });
 };
+function chunkArray(items, chunkSize=4) {
+  
+  const chunks = [];
+  for(let i=0; i<chunkSize;i++){
+    chunks[i]=[];
+  }
+  let j=0;
+  for(const item of items){
+    chunks[j].push(item);
+    j++;
+    if(j>=chunkSize){
+      j=0;
+    }
 
-processPDFFiles().then(() =>
-  console.log("All PDF files processed successfully."),
+  }
+  return chunks;
+}
+const files = fs.readdirSync(pdfDirectory);
+const chunks = chunkArray(
+  files.filter((file) => file.endsWith(".pdf")),
+  4,
 );
+chunks.forEach((pdfFiles) => {
+  processPDFFiles(pdfFiles).then(() =>
+    console.log("All PDF files processed successfully."),
+  );
+});

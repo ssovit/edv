@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "@types/puppeteer": "^7.0.4",
+    "axios": "^1.6.8",
+    "nodejs-whisper": "^0.1.13",
     "pdfreader": "^3.0.2",
     "puppeteer": "^22.7.1"
   }

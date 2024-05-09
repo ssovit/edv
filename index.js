@@ -132,30 +132,36 @@ const getTextFromPDF = async (pdfPath) => {
     });
   });
 };
-function chunkArray(items, chunkSize=4) {
-  
+function chunkArray(items, chunkSize = 4) {
   const chunks = [];
-  for(let i=0; i<chunkSize;i++){
-    chunks[i]=[];
+  for (let i = 0; i < chunkSize; i++) {
+    chunks[i] = [];
   }
-  let j=0;
-  for(const item of items){
+  let j = 0;
+  for (const item of items) {
     chunks[j].push(item);
     j++;
-    if(j>=chunkSize){
-      j=0;
+    if (j >= chunkSize) {
+      j = 0;
     }
-
   }
   return chunks;
 }
-const files = fs.readdirSync(pdfDirectory);
-const chunks = chunkArray(
-  files.filter((file) => file.endsWith(".pdf")),
-  4,
-);
-chunks.forEach((pdfFiles) => {
-  processPDFFiles(pdfFiles).then(() =>
-    console.log("All PDF files processed successfully."),
-  );
-});
+const processAll = () => {
+  let files = fs.readdirSync(pdfDirectory);
+  const filtered = files.filter((file) => file.endsWith(".pdf"));
+  if (filtered.length > 0) {
+    const chunks = chunkArray(
+      files.filter((file) => file.endsWith(".pdf")),
+      4,
+    );
+    chunks.forEach((pdfFiles) => {
+      processPDFFiles(pdfFiles).then(() => {
+        processAll();
+      });
+    });
+  }else{
+    console.log("All Done");
+  }
+};
+processAll()

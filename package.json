@@ -16,6 +16,6 @@
     "axios": "^1.6.8",
     "nodejs-whisper": "^0.1.13",
     "pdfreader": "^3.0.2",
-    "puppeteer": "^22.7.1"
+    "puppeteer": "^22.11.2"
   }
 }

@@ -168,6 +168,7 @@ export default function runner(STATUS, INSTANCE_COUNT) {
           //console.log(e)
           console.log(`Error Checking : ${file}`);
           failedFiles.push(file);
+          error_count++;
           //fs.renameSync(pdfPath, path.join(manualDirectory, file));
         }
         // clearCookies(page);

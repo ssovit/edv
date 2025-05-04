@@ -14,11 +14,15 @@
     "@types/axios": "^0.14.0",
     "@types/puppeteer": "^7.0.4",
     "axios": "^1.6.8",
+    "fs-extra": "^11.3.0",
     "nodejs-whisper": "^0.1.13",
     "pdf-parse": "^1.1.1",
     "pdf-text-reader": "^5.1.0",
     "pdf-to-text": "^0.0.7",
     "pdfreader": "^3.0.2",
-    "puppeteer": "^22.7.1"
+    "puppeteer": "^22.7.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "winston": "^3.17.0"
   }
 }

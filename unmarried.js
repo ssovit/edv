@@ -1,2 +1,2 @@
 import runner from "./func.js";
-runner("unmarried",1);
+runner("unmarried",5);
